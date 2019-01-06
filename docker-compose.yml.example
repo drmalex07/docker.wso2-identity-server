@@ -1,0 +1,30 @@
+# vim: set syntax=yaml:
+
+version: '3'
+
+volumes: {}
+
+networks:
+  'wso2_default': {external: true}
+
+services:
+
+  idp:
+    image: 'local/wso2is:5.7'
+    build:
+      context: "."
+      args:
+        SERVER_NAME: "id-provider.localdomain"
+        # The SERVER_PORT must be same as exposed port! 
+        SERVER_PORT: "443"
+
+    hostname: 'wso2is-1'
+    
+    # Todo: where should database and logs go?
+    volumes: [] 
+    
+    ports:
+    - '443:9443/tcp'
+    
+    networks: 
+    - 'wso2_default'
