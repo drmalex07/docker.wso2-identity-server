@@ -1,8 +1,6 @@
 /data/
 /temp/
 
-/server.p12
-/server-password
 /secrets/
 
 /docker-compose.yml
