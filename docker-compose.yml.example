@@ -9,26 +9,6 @@ networks:
 
 services:
 
-  database:
-    image: 'local/wso2carbon-database:5.7'
-    build:
-      context: 'images/wso2carbon-database'
-
-    hostname: 'wso2carbon-database-1'
-    
-    volumes:
-    - './data:/var/lib/postgresql/data'
-    - './secrets/postgres-password:/run/postgres-password:ro'
-
-    environment:
-      POSTGRES_PASSWORD_FILE: '/run/postgres-password'  
-
-    ports:
-    - '5435:5432/tcp'
-    
-    networks: 
-    - 'wso2_default'
-
   idp:
     image: 'local/wso2is:5.7'
     build:
@@ -41,8 +21,7 @@ services:
     hostname: 'wso2is-1'
     
     environment:
-      # The hostname of the database server (in same network!)
-      DATABASE: 'database'
+      DATABASE: ''
     
     volumes: [] 
     
