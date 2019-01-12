@@ -35,11 +35,12 @@ RUN xmlstarlet edit --inplace -N c=http://wso2.org/projects/carbon/carbon.xml --
 
 # Configure primary datasource
 
-ENV DATABASE="database" 
-ENV DATASOURCE_CONFIG_FILE="${WSO2_SERVER_HOME}/repository/conf/datasources/master-datasources.xml"
+ENV DATABASE="database"
+ENV USER_MGT_CONFIG_FILE="${WSO2_SERVER_HOME}/repository/conf/user-mgt.xml" DATASOURCE_CONFIG_FILE="${WSO2_SERVER_HOME}/repository/conf/datasources/master-datasources.xml" 
 
-RUN xmlstarlet edit --inplace --update "datasources-configuration/datasources/datasource/name[text()='WSO2_CARBON_DB']/parent::datasource/definition/configuration/url" -v "jdbc:postgresql://${DATABASE}/wso2carbon"  ${DATASOURCE_CONFIG_FILE} && \
-    xmlstarlet edit --inplace --update "datasources-configuration/datasources/datasource/name[text()='WSO2_CARBON_DB']/parent::datasource/definition/configuration/driverClassName" -v "org.postgresql.Driver"  ${DATASOURCE_CONFIG_FILE}
+ADD  --chown=wso2carbon:wso2 http://jdbc.postgresql.org/download/postgresql-42.2.5.jar ${WSO2_SERVER_HOME}/repository/components/lib/
 
-ADD --chown=wso2carbon:wso2 http://jdbc.postgresql.org/download/postgresql-42.2.5.jar ${WSO2_SERVER_HOME}/repository/components/lib/
+COPY --chown=wso2carbon:wso2 conf/datasources/master-datasources.xml ${DATASOURCE_CONFIG_FILE}
+RUN  xmlstarlet edit --inplace --update "datasources-configuration/datasources/datasource/name[text()='WSO2_CARBON_DB']/parent::datasource/definition/configuration/url" -v "jdbc:postgresql://${DATABASE}/wso2carbon"  ${DATASOURCE_CONFIG_FILE}
 
+COPY --chown=wso2carbon:wso2 conf/user-mgt.xml ${USER_MGT_CONFIG_FILE}
