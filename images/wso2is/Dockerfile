@@ -16,10 +16,12 @@ COPY server.p12 ./
 
 # Setup server keystore
 
-ENV SERVER_NAME="${SERVER_NAME}" SERVER_PORT="${SERVER_PORT}" SERVER_KEYSTORE="${WSO2_SERVER_HOME}/repository/resources/security/wso2carbon.jks"
+ENV SERVER_NAME="${SERVER_NAME}" SERVER_PORT="${SERVER_PORT}" 
+ENV SERVER_KEYSTORE="${WSO2_SERVER_HOME}/repository/resources/security/wso2carbon.jks" CLIENT_KEYSTORE="${WSO2_SERVER_HOME}/repository/resources/security/client-truststore.jks"
 
 RUN keytool -delete -alias wso2carbon -keystore ${SERVER_KEYSTORE} -storepass wso2carbon
 RUN keytool -importkeystore -srckeystore server.p12 -srcstoretype PKCS12 -destkeystore ${SERVER_KEYSTORE} -srcstorepass wso2carbon -deststorepass wso2carbon -srcalias 1 -destalias wso2carbon -destkeypass wso2carbon
+RUN keytool -importkeystore -srckeystore server.p12 -srcstoretype PKCS12 -destkeystore ${CLIENT_KEYSTORE} -srcstorepass wso2carbon -deststorepass wso2carbon -srcalias 1 -destalias localdomain -destkeypass wso2carbon
 
 # Configure Tomcat connectors (catalina-server.xml)
 
@@ -47,3 +49,9 @@ COPY --chown=wso2carbon:wso2 conf/datasources/master-datasources.xml ${DATASOURC
 RUN  xmlstarlet edit --inplace --update "datasources-configuration/datasources/datasource/name[text()='WSO2_CARBON_DB']/parent::datasource/definition/configuration/url" -v "jdbc:postgresql://${DATABASE}/wso2carbon"  ${DATASOURCE_CONFIG_FILE}
 
 COPY --chown=wso2carbon:wso2 conf/user-mgt.xml ${USER_MGT_CONFIG_FILE}
+
+# Configure dashboard application
+
+RUN echo "{\"proxy\":{\"proxyHost\":\"${SERVER_NAME}\",\"proxyHTTPSPort\":\"${SERVER_PORT}\",\"proxyContextPath\":\"\",\"servicePath\":\"/services\"}}" > ${WSO2_SERVER_HOME}/repository/deployment/server/jaggeryapps/dashboard/conf/site.json
+RUN echo "{\"proxy\":{\"proxyHost\":\"${SERVER_NAME}\",\"proxyHTTPSPort\":\"${SERVER_PORT}\",\"proxyContextPath\":\"\"},\"fido\":{\"appId\":\"\"}}" > ${WSO2_SERVER_HOME}/repository/deployment/server/jaggeryapps/portal/conf/site.json
+
