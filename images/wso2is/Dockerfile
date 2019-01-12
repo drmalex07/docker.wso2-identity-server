@@ -23,8 +23,11 @@ RUN keytool -importkeystore -srckeystore server.p12 -srcstoretype PKCS12 -destke
 
 # Configure Tomcat connectors (catalina-server.xml)
 
-RUN xmlstarlet edit --inplace --insert "Server/Service/Connector[@port='9443']" -t attr -n proxyPort -v "${SERVER_PORT}" ${WSO2_SERVER_HOME}/repository/conf/tomcat/catalina-server.xml && \
-    xmlstarlet edit --inplace --insert "Server/Service/Connector[@port='9443']" -t attr -n proxyName -v "${SERVER_NAME}" ${WSO2_SERVER_HOME}/repository/conf/tomcat/catalina-server.xml
+ENV TOMCAT_CATALINA_CONFIG_FILE="${WSO2_SERVER_HOME}/repository/conf/tomcat/catalina-server.xml"
+
+RUN xmlstarlet edit --inplace --insert "Server/Service/Connector[@port='9443']" -t attr -n proxyPort -v "${SERVER_PORT}" ${TOMCAT_CATALINA_CONFIG_FILE} && \
+    xmlstarlet edit --inplace --insert "Server/Service/Connector[@port='9443']" -t attr -n proxyName -v "${SERVER_NAME}" ${TOMCAT_CATALINA_CONFIG_FILE} && \
+    xmlstarlet edit --inplace --delete "Server/Service/Connector[@port='9443']/@clientAuth" ${TOMCAT_CATALINA_CONFIG_FILE} 
     
 # Configure Carbon (carbon.xml)
 
