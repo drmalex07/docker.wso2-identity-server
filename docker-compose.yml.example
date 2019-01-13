@@ -21,6 +21,7 @@ services:
     hostname: 'wso2is-1'
     
     environment:
+      JVM_MEM_OPTS: '-Xms512m -Xmx1024m'
       DATABASE: ''
     
     volumes: [] 
