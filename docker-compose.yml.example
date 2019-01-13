@@ -24,7 +24,7 @@ services:
       POSTGRES_PASSWORD_FILE: '/run/postgres-password'  
 
     ports:
-    - '5435:5432/tcp'
+    - '127.0.0.1:5435:5432/tcp'
     
     networks: 
     - 'wso2_default'
