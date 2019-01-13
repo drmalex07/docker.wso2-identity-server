@@ -38,6 +38,12 @@ ENV CARBON_CONFIG_FILE="${WSO2_SERVER_HOME}/repository/conf/carbon.xml"
 RUN xmlstarlet edit --inplace -N c=http://wso2.org/projects/carbon/carbon.xml --update "c:Server/c:HostName" -v "${SERVER_NAME}" ${CARBON_CONFIG_FILE} && \
     xmlstarlet edit --inplace -N c=http://wso2.org/projects/carbon/carbon.xml --update "c:Server/c:MgtHostName" -v "${SERVER_NAME}" ${CARBON_CONFIG_FILE}
 
+# Configure resident IdP 
+
+ENV IDENTITY_CONFIG_FILE="${WSO2_SERVER_HOME}/repository/conf/identity/identity.xml"
+
+RUN xmlstarlet edit --inplace -N c=http://wso2.org/projects/carbon/carbon.xml --update c:Server/c:SSOService/c:EntityId -v '${carbon.protocol}://${carbon.host}' ${IDENTITY_CONFIG_FILE}
+
 # Configure dashboard application
 
 RUN echo "{\"proxy\":{\"proxyHost\":\"${SERVER_NAME}\",\"proxyHTTPSPort\":\"${SERVER_PORT}\",\"proxyContextPath\":\"\",\"servicePath\":\"/services\"}}" > ${WSO2_SERVER_HOME}/repository/deployment/server/jaggeryapps/dashboard/conf/site.json
